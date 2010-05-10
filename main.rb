@@ -11,9 +11,12 @@ require  BASE_DIR + '/libs/string'
 
 class Gitruno < Gtk::Window
   @git = nil
+  @minimized = nil
 
   def initialize
     super
+
+    @minimized = true
 
     puts "BASE_DIR = #{BASE_DIR}"
     @git = Git.init BASE_DIR + '/notes'
@@ -30,7 +33,23 @@ class Gitruno < Gtk::Window
       
     set_default_size 400, 400
     set_window_position Gtk::Window::POS_CENTER
-    show_all
+
+    icon = Gtk::StatusIcon.new
+    icon.tooltip = 'Gitruno'
+    icon.set_stock Gtk::Stock::EDIT
+
+    icon.signal_connect('activate') do
+      if @minimized
+        puts "Showing window..."
+        self.show_all
+        @minimized = false
+      else
+        puts "Hiding window..."
+        self.hide
+        @minimized = true
+      end
+    end
+
   end
 
   def init_ui
@@ -75,4 +94,5 @@ end
 
 Gtk.init
 window = Gitruno.new
+
 Gtk.main
