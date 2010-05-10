@@ -1,14 +1,3 @@
-#!/usr/bin/ruby
-
-require 'gtk2'
-require 'rubygems'
-require 'git'
-require 'pp'
-
-BASE_DIR = File.expand_path(File.dirname(__FILE__))
-
-require  BASE_DIR + '/libs/string'
-
 class Gitruno < Gtk::Window
   @git = nil
   @minimized = nil
@@ -91,8 +80,3 @@ class Gitruno < Gtk::Window
     add fixed      
   end
 end
-
-Gtk.init
-window = Gitruno.new
-
-Gtk.main
