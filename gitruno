@@ -11,6 +11,11 @@ require BASE_DIR + '/libs/string'
 require BASE_DIR + '/libs/gitruno'
 require BASE_DIR + '/libs/note'
 
+puts "BASE_DIR = #{BASE_DIR}"
+$git = Git.init BASE_DIR + '/notes'
+puts "Git repo initialized!"
+puts ""
+
 Gtk.init
 window = Gitruno.new
 Gtk.main

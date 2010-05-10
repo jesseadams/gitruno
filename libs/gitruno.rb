@@ -7,11 +7,6 @@ class Gitruno < Gtk::Window
 
     @minimized = true
 
-    puts "BASE_DIR = #{BASE_DIR}"
-    @git = Git.init BASE_DIR + '/notes'
-    puts "Git repo initialized!"
-    puts ""
-
     set_title "Gitruno"
     signal_connect "destroy" do 
       puts "Closing!"
@@ -70,10 +65,19 @@ class Gitruno < Gtk::Window
       iter = notes_model.append
       iter[0] = file.to_title
       iter[1] = File.mtime(BASE_DIR + '/notes/' + file).to_s
-      puts "Added #{file} as '#{file.to_title}"
+      puts "Added #{file} as '#{file.to_title}'"
       num_notes = num_notes + 1
     end
     puts ">> #{num_notes} notes total."
+
+    notes_view.signal_connect("row-activated") do |view, path, column|
+      puts "Row #{path.to_str} was clicked!"
+
+      if iter = view.model.get_iter(path)
+        puts "Double-clicked row contains name #{iter[0]}!"
+        note = Note.new iter[0].to_filename
+      end
+    end
 
     fixed.put notes_view, 0,0
 
