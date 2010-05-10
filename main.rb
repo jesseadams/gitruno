@@ -3,16 +3,26 @@
 require 'gtk2'
 require 'rubygems'
 require 'git'
-require 'date'
+require 'pp'
 
-require 'libs/string'
+BASE_DIR = File.expand_path(File.dirname(__FILE__))
+
+require  BASE_DIR + '/libs/string'
 
 class Gitruno < Gtk::Window
+  @git = nil
+
   def initialize
     super
 
+    puts "BASE_DIR = #{BASE_DIR}"
+    @git = Git.init BASE_DIR + '/notes'
+    puts "Git repo initialized!"
+    puts ""
+
     set_title "Gitruno"
     signal_connect "destroy" do 
+      puts "Closing!"
       Gtk.main_quit 
     end
       
@@ -40,16 +50,22 @@ class Gitruno < Gtk::Window
     
     notes_view.selection.set_mode(Gtk::SELECTION_SINGLE)
 
-    files = Dir.entries('notes')
+    puts ">> Loading notes... "
+    files = Dir.entries(BASE_DIR + '/notes')
+  
+    num_notes = 0
     files.each do |file|
-      if ['.', '..'].include? file
+      if ['.', '..', '.git'].include? file
         next
       end
 
       iter = notes_model.append
       iter[0] = file.to_title
-      iter[1] = File.mtime('notes/' + file).to_s
+      iter[1] = File.mtime(BASE_DIR + '/notes/' + file).to_s
+      puts "Added #{file} as '#{file.to_title}"
+      num_notes = num_notes + 1
     end
+    puts ">> #{num_notes} notes total."
 
     fixed.put notes_view, 0,0
 
@@ -58,5 +74,5 @@ class Gitruno < Gtk::Window
 end
 
 Gtk.init
-    window = Gitruno.new
+window = Gitruno.new
 Gtk.main
