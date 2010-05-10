@@ -2,12 +2,13 @@ class Note < Gtk::Window
   @note = nil
   @buffer = nil
 
-  def initialize(note)
+  def initialize(note = nil)
     super
-    
-    @note = file_to_string(note)
-
-    puts "Loading #{note}..."
+ 
+    unless note.nil?
+      @note = file_to_string(note)
+      puts "Loading #{note}..."
+    end
 
     signal_connect "destroy" do
       puts "Saving Note: #{note}"
