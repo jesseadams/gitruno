@@ -15,14 +15,17 @@ class Gitruno < Gtk::Window
       
     init_ui
       
-    set_default_size 400, 400
+#    set_default_size 400, 400
     set_window_position Gtk::Window::POS_CENTER
 
-    icon = Gtk::StatusIcon.new
-    icon.tooltip = 'Gitruno'
-    icon.set_stock Gtk::Stock::EDIT
+    icon = render_icon(Gtk::Stock::EDIT, Gtk::IconSize::DIALOG)
+    set_icon(icon)
 
-    icon.signal_connect('activate') do
+    tray_icon = Gtk::StatusIcon.new
+    tray_icon.tooltip = 'Gitruno'
+    tray_icon.set_stock Gtk::Stock::EDIT
+
+    tray_icon.signal_connect('activate') do
       if @minimized
         puts "Showing window..."
         self.show_all
@@ -37,7 +40,7 @@ class Gitruno < Gtk::Window
   end
 
   def init_ui
-    fixed = Gtk::Fixed.new
+    vbox = Gtk::VBox.new(false, 10)
 
     notes_model = Gtk::ListStore.new(String, String)
     notes_view = Gtk::TreeView.new(notes_model)
@@ -79,8 +82,16 @@ class Gitruno < Gtk::Window
       end
     end
 
-    fixed.put notes_view, 0,0
+    vbox.add notes_view
 
-    add fixed      
+    hbox = Gtk::HBox.new false
+
+    new_note_button = Gtk::Button.new('New Note')
+    hbox.add new_note_button
+
+    vbox.add hbox
+
+    add vbox 
+    # FIXME: http://zetcode.com/tutorials/rubygtktutorial/layoutmanagement/
   end
 end
