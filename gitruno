@@ -17,5 +17,5 @@ puts "Git repo initialized!"
 puts ""
 
 Gtk.init
-window = Gitruno.new
+$window = Gitruno.new
 Gtk.main

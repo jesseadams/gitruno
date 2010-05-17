@@ -2,21 +2,29 @@ class Note < Gtk::Window
   @note = nil
   @buffer = nil
 
-  def initialize(note = nil)
+  def initialize(note = '')
     super
  
-    unless note.nil?
+    unless note.nil? || note.length == 0
       @note = file_to_string(note)
       puts "Loading #{note}..."
     end
 
     signal_connect "destroy" do
-      puts "Saving Note: #{note}"
-      save_note(note)
-
       begin
+        if @note.nil?
+          if @buffer.text.length == 0
+            raise "No data for new note creation. Ignoring..."
+          end
+
+          note = @buffer.text.split("\n").first.to_filename
+        end
+        puts "Saving Note: #{note}"
+        save_note(note)
+        $window.reload_notes
+
         $git.add('.')
-        $git.commit("Saved note #{note}")
+        $git.commit_all("Saved note #{note}")
         puts "Note saved: #{note}"
       rescue Exception => error
         puts error.message
@@ -33,7 +41,11 @@ class Note < Gtk::Window
   end
   def init_ui
     textview = Gtk::TextView.new
-    textview.buffer.text = @note
+    if @note.nil?
+      textview.buffer.text = ''
+    else
+      textview.buffer.text = @note
+    end
     @buffer = textview.buffer
 
     scrolled_win = Gtk::ScrolledWindow.new
