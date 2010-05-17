@@ -1,3 +1,45 @@
-Project is still in the works! Please come back later...
+=== Gitruno
 
-sudo gem install git
+Gitruno is short for Git/Ruby Notes. It aims to be a A tomboy replacement in Ruby GTK2 that stores notes in flatfiles and uses git to manage revisions.
+
+=== Requirements
+
+* ruby (1.8.X or higher)
+* ruby-gtk2
+* git gem
+* git
+
+=== Installation
+
+1. Clone git repository
+2. cd /path/to/repo
+
+More here later?
+
+=== Usage
+
+Execute the gitruno ruby script in the root
+
+1. cd gitruno
+2. ./gitruno
+
+=== Author
+
+Jesse R. Adams (techno-geek)
+
+Please foward all questions to jesse <at> techno <dash> geeks <dot> org.
+
+Enjoy!
+
+=== Todo
+
+* Add a delete button for notes
+* Re-work note list window layout to be attractive
+* Add menu to tray icon
+* Add sync functionality (git push and pull)
+
+=== Incubated
+
+* Review revisions on a per note basis built in?
+* Store notes with standardk, processed markup
+* Handle links properly
