@@ -4,11 +4,13 @@ class Gitruno < Gtk::Window
   @notes_view = nil
   @notes_model = nil
   @notes_index = []
+  @sync_button = nil
 
   def initialize
     super
 
     @minimized = true
+    @can_sync = true
 
     set_title "Gitruno"
     signal_connect "destroy" do 
@@ -73,11 +75,20 @@ class Gitruno < Gtk::Window
 
     hbox = Gtk::HBox.new false
 
-    new_note_button = Gtk::Button.new('New Note')
+    new_note_button = Gtk::Button.new('New')
     hbox.add new_note_button
+
+    @sync_button = Gtk::Button.new('Sync')
+    hbox.add @sync_button
 
     new_note_button.signal_connect('clicked') do 
       note = Note.new
+    end
+
+    @sync_button.signal_connect('clicked') do 
+      if @sync_button.sensitive?
+        sync
+      end
     end
 
     vbox.add hbox
@@ -110,5 +121,30 @@ class Gitruno < Gtk::Window
     @notes_model.clear
 
     load_notes
+  end
+
+  def sync
+    @sync_button.sensitive = false
+    puts "Attempting to sync files..."
+    number_changed = $git.status.changed.length
+  
+    if number_changed > 0
+      puts "Files have changed. Committing before sync..."
+      print "Commit... "
+      $git.commit_all('Syncing notes!')
+      print "OK\n"
+    end
+  
+    print "Pull... "
+    $git.pull
+    print "OK\n"
+
+    print "Push... "
+    $git.push
+    print "OK\n"
+
+    puts "Sync complete!"
+    
+    @sync_button.sensitive = true
   end
 end

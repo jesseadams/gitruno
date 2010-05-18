@@ -11,16 +11,17 @@ Gitruno is short for Git/Ruby Notes. It aims to be a A tomboy replacement in Rub
 
 === Installation
 
-1. Clone git repository
-2. cd /path/to/repo
-
-More here later?
+1. Clone gitruno git repository
+2. Create a personal repository somewhere to hold notes for syncing
+3. cd /path/to/gitruno/notes
+4. git remote add origin <your_repo_info>
+5. git push origin master
 
 === Usage
 
-Execute the gitruno ruby script in the root
+Execute the gitruno ruby script in the root folder
 
-1. cd gitruno
+1. cd /path/to/gitruno
 2. ./gitruno
 
 === Author
