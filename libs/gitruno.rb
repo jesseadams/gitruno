@@ -20,7 +20,7 @@ class Gitruno < Gtk::Window
       
     init_ui
       
-#    set_default_size 400, 400
+    set_default_size 450, 450
     set_window_position Gtk::Window::POS_CENTER
 
     icon = render_icon(Gtk::Stock::EDIT, Gtk::IconSize::DIALOG)
@@ -65,8 +65,6 @@ class Gitruno < Gtk::Window
   end
 
   def init_ui
-    vbox = Gtk::VBox.new(false, 10)
-
     @notes_model = Gtk::ListStore.new(String, String)
     @notes_view = Gtk::TreeView.new(@notes_model)
     
@@ -92,15 +90,14 @@ class Gitruno < Gtk::Window
       end
     end
 
-    vbox.add @notes_view
-
-    hbox = Gtk::HBox.new false
+    scrolled_win = Gtk::ScrolledWindow.new
+    scrolled_win.border_width = 5
+    scrolled_win.add(@notes_view)
+    scrolled_win.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS)
 
     new_note_button = Gtk::Button.new('New')
-    hbox.add new_note_button
 
     @sync_button = Gtk::Button.new('Sync')
-    hbox.add @sync_button
 
     new_note_button.signal_connect('clicked') do 
       note = Note.new
@@ -112,9 +109,13 @@ class Gitruno < Gtk::Window
       end
     end
 
-    vbox.add hbox
+    table = Gtk::Table.new 8, 4, false
+    table.set_column_spacings 3
 
-    add vbox 
+    table.attach(scrolled_win, 1, 4, 1, 6, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
+    table.attach(new_note_button, 1, 2, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(@sync_button, 3, 4, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
+    add table
     # FIXME: http://zetcode.com/tutorials/rubygtktutorial/layoutmanagement/
   end
 
@@ -130,7 +131,7 @@ class Gitruno < Gtk::Window
 
       iter = @notes_model.append
       iter[0] = file.to_title
-      iter[1] = File.mtime(BASE_DIR + '/notes/' + file).to_s
+      iter[1] = Time.parse(File.mtime(BASE_DIR + '/notes/' + file).to_s).strftime('%Y-%m-%d %I:%M %p')
       puts "Added #{file} as '#{file.to_title}'"
       num_notes = num_notes + 1
     end
@@ -151,16 +152,14 @@ class Gitruno < Gtk::Window
   
     if number_changed > 0
       puts "Files have changed. Committing before sync..."
-      print "Commit... "
-      $git.commit_all('Syncing notes!')
-      print "OK\n"
+      puts "Committing..."
+      puts $git.commit_all('Syncing notes!')
     end
   
-    print "Pull... "
-    $git.pull
-    print "OK\n"
+    puts "Pulling..."
+    puts $git.pull
 
-    print "Push... "
+    print "Pushing... "
     $git.push
     print "OK\n"
 

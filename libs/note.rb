@@ -1,9 +1,13 @@
 class Note < Gtk::Window
   @note = nil
   @buffer = nil
+  @file = nil
+  @deleted = false
 
   def initialize(note = '')
     super
+
+    @file = note
  
     unless note.nil? || note.length == 0
       @note = file_to_string(note)
@@ -12,6 +16,10 @@ class Note < Gtk::Window
 
     signal_connect "destroy" do
       begin
+        if @deleted
+          raise "Note was deleted! No need to save..."
+        end
+
         if @note.nil?
           if @buffer.text.length == 0
             raise "No data for new note creation. Ignoring..."
@@ -40,6 +48,8 @@ class Note < Gtk::Window
     show_all
   end
   def init_ui
+    table = Gtk::Table.new 8, 4, false
+  
     textview = Gtk::TextView.new
     if @note.nil?
       textview.buffer.text = ''
@@ -53,7 +63,14 @@ class Note < Gtk::Window
     scrolled_win.add(textview)
     scrolled_win.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS)
 
-    add(scrolled_win)
+    delete_button = Gtk::Button.new("Delete")
+    delete_button.signal_connect('clicked') do
+      delete_note
+    end
+
+    table.attach(scrolled_win, 1, 4, 1, 6, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
+    table.attach(delete_button, 2, 3, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
+    add table 
   end
 
   def file_to_string(file)
@@ -79,4 +96,15 @@ class Note < Gtk::Window
 
     handle.close
   end 
+
+  def delete_note
+    print "Deleting #{@file}... "
+    $git.remove(BASE_DIR + '/notes/' + @file)
+    $git.commit_all("Removed note #{@file}")
+    print "OK\n"
+     
+    @deleted = true
+    $window.reload_notes
+    destroy
+  end
 end

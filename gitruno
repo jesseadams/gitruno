@@ -4,6 +4,7 @@ require 'gtk2'
 require 'rubygems'
 require 'git'
 require 'pp'
+require 'time'
 
 BASE_DIR = File.expand_path(File.dirname(__FILE__))
 
