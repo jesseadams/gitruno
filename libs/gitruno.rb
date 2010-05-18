@@ -41,6 +41,27 @@ class Gitruno < Gtk::Window
         @minimized = true
       end
     end
+
+    tray_option_sync = Gtk::MenuItem.new("Sync")
+    tray_option_exit = Gtk::MenuItem.new("Exit")
+
+    tray_option_sync.signal_connect('activate') do
+      sync
+    end
+    tray_option_exit.signal_connect('activate') do
+      destroy
+    end
+
+    tray_menu = Gtk::Menu.new
+    tray_menu.append(tray_option_sync)
+    tray_menu.append(tray_option_exit)
+    tray_menu.show_all
+
+    tray_icon.position_menu(tray_menu)
+
+    tray_icon.signal_connect('popup-menu') do |tray, button, time|
+      tray_menu.popup nil, nil, button, time
+    end
   end
 
   def init_ui
