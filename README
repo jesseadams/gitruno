@@ -34,11 +34,12 @@ Enjoy!
 
 === Todo
 
-* Disable Delete button on new note
-* Note search
+* Add quick loads for the 10 most recent notes to StatusIcon menu
+* Add icons to StatusIcon menu
+* Investigate and fix seg fault on window.destroy
+* Incorporate standard markup
 
 === Incubated
 
+* Keyboard shortcuts, if possible
 * Review revisions on a per note basis built in?
-* Store notes with standard, processed markup
-* Handle links properly
