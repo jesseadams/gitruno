@@ -41,7 +41,12 @@ class Note < Gtk::Window
     end
 
     set_default_size 400, 400
-    set_title note.to_title
+
+    if @note.nil?
+      set_title "New Note"
+    else 
+      set_title note.to_title
+    end
 
     init_ui
 
@@ -66,8 +71,15 @@ class Note < Gtk::Window
     scrolled_win.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS)
 
     delete_button = Gtk::Button.new("Delete")
-    delete_button.signal_connect('clicked') do
-      delete_note
+    
+    if @note.nil?
+      delete_button.sensitive = false
+    end
+
+    unless !delete_button.sensitive?
+      delete_button.signal_connect('clicked') do
+        delete_note
+      end
     end
 
     table.attach(scrolled_win, 1, 4, 1, 6, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
