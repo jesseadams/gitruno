@@ -34,13 +34,12 @@ Enjoy!
 
 === Todo
 
-* Add a delete button for notes
-* Re-work note list window layout to be attractive
-* Add menu to tray icon
-* Add sync functionality (git push and pull)
+* Add indicator for sync progress
+* Disable Delete button on new note
+* Note search
 
 === Incubated
 
 * Review revisions on a per note basis built in?
-* Store notes with standardk, processed markup
+* Store notes with standard, processed markup
 * Handle links properly
