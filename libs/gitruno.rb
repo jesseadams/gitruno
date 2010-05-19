@@ -39,6 +39,7 @@ class Gitruno < Gtk::Window
     tray_icon.signal_connect('activate') do
       if @minimized
         puts "Showing window..."
+        self.deiconify
         self.show_all
         @minimized = false
       else
