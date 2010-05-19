@@ -72,6 +72,17 @@ class Gitruno < Gtk::Window
   end
 
   def init_ui
+    @search_entry = Gtk::Entry.new
+
+    @search_entry.signal_connect("changed") do
+      puts "Trigger Search!"
+      search
+    end
+
+    #@search.signal_connect("delete_text") do
+    #  search
+    #end
+
     @notes_model = Gtk::ListStore.new(String, String)
     @notes_view = Gtk::TreeView.new(@notes_model)
     
@@ -127,12 +138,13 @@ class Gitruno < Gtk::Window
       end
     end
 
-    table = Gtk::Table.new 8, 4, false
+    table = Gtk::Table.new 9, 4, false
     table.set_column_spacings 3
 
-    table.attach(scrolled_win, 1, 4, 1, 6, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
-    table.attach(new_note_button, 1, 2, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
-    table.attach(@sync_button, 3, 4, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(@search_entry, 1, 4, 1, 2, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(scrolled_win, 1, 4, 2, 7, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
+    table.attach(new_note_button, 1, 2, 8, 9, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(@sync_button, 3, 4, 8, 9, Gtk::FILL, Gtk::FILL, 5, 5)
     add table
 
     sort(0)
@@ -143,10 +155,16 @@ class Gitruno < Gtk::Window
     puts ">> Loading notes... "
     files = Dir.entries(BASE_DIR + '/notes')
 
-    num_notes = 0
+    num_notes = 0 
     files.each do |file|
       if ['.', '..', '.git'].include? file
         next
+      end
+
+      if @search_entry.text.length > 0
+        unless file.downcase =~ /#{@search_entry.text.downcase}/
+          next
+        end
       end
 
       iter = @notes_model.append
@@ -272,5 +290,11 @@ class Gitruno < Gtk::Window
       puts "Processing pending events..."
       Gtk.main_iteration
     end  
+  end
+
+  def search
+    puts "Searching for notes: #{@search_entry.text}"
+    @notes_model.clear
+    load_notes
   end
 end
