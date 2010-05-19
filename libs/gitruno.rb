@@ -169,23 +169,59 @@ class Gitruno < Gtk::Window
     @sync_button.sensitive = false
     puts "Attempting to sync files..."
     number_changed = $git.status.changed.length
-  
-    if number_changed > 0
-      puts "Files have changed. Committing before sync..."
-      puts "Committing..."
-      puts $git.commit_all('Syncing notes!')
+
+    # Create the dialog
+    dialog = Gtk::Dialog.new("Syncing Notes", self, Gtk::Dialog::DESTROY_WITH_PARENT)
+
+    # Ensure that the dialog box is destroyed when the user responds.
+    dialog.signal_connect('response') { dialog.destroy }
+
+    # Add the message in a label, and show everything we've added to the dialog.
+    progress_text = Gtk::Label.new("Initializing...")
+
+    progress_bar = Gtk::ProgressBar.new
+
+    pulser = Gtk.timeout_add(100) do
+      progress_bar.pulse
     end
+
+    vbox = Gtk::VBox.new false, 10
+    vbox.add(progress_text)
+    vbox.add(progress_bar)
+
+    dialog.vbox.add(vbox)
+
+    dialog.set_default_size 250, 50
+
+    dialog.show_all
+
+    process_all_first
+
+    Thread.start do
+      if number_changed > 0
+        puts "Files have changed. Committing before sync..."
+        puts "Committing..."
+        progress_text.text = 'Committing...'
+        puts $git.commit_all('Syncing notes!')
+      end
   
-    puts "Pulling..."
-    puts $git.pull
+      puts "Pulling..."
+      progress_text.text = 'Pulling in notes...'
+      puts $git.pull
 
-    print "Pushing... "
-    $git.push
-    print "OK\n"
+      print "Pushing... "
+      progress_text.text = 'Pushing out notes...'
+      $git.push
+      print "OK\n"
 
-    puts "Sync complete!"
+      puts "Sync complete!"
+      progress_text.text = 'Complete!'
     
-    @sync_button.sensitive = true
+      Gtk.timeout_remove(pulser)
+
+      @sync_button.sensitive = true
+      dialog.destroy
+    end
   end
 
   def sort(column)
@@ -235,5 +271,12 @@ class Gitruno < Gtk::Window
 
     @column_sort_id = column
     @column_sort_direction = direction
+  end
+
+  def process_all_first
+    while (Gtk.events_pending?)
+      puts "Processing pending events..."
+      Gtk.main_iteration
+    end  
   end
 end
