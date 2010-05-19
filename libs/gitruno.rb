@@ -170,15 +170,9 @@ class Gitruno < Gtk::Window
     puts "Attempting to sync files..."
     number_changed = $git.status.changed.length
 
-    # Create the dialog
     dialog = Gtk::Dialog.new("Syncing Notes", self, Gtk::Dialog::DESTROY_WITH_PARENT)
 
-    # Ensure that the dialog box is destroyed when the user responds.
-    dialog.signal_connect('response') { dialog.destroy }
-
-    # Add the message in a label, and show everything we've added to the dialog.
     progress_text = Gtk::Label.new("Initializing...")
-
     progress_bar = Gtk::ProgressBar.new
 
     pulser = Gtk.timeout_add(100) do
@@ -274,7 +268,7 @@ class Gitruno < Gtk::Window
   end
 
   def process_all_first
-    while (Gtk.events_pending?)
+    while Gtk.events_pending? do
       puts "Processing pending events..."
       Gtk.main_iteration
     end  
