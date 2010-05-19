@@ -58,6 +58,8 @@ class Note < Gtk::Window
     end
     @buffer = textview.buffer
 
+    textview.wrap_mode = Gtk::TextTag::WRAP_WORD
+
     scrolled_win = Gtk::ScrolledWindow.new
     scrolled_win.border_width = 5
     scrolled_win.add(textview)
