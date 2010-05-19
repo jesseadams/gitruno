@@ -6,6 +6,12 @@ class Gitruno < Gtk::Window
   @notes_index = []
   @sync_button = nil
 
+  @column_sort_id = nil
+  @column_sort_direction = nil
+
+  @title_column = nil
+  @modified_column = nil
+
   def initialize
     super
 
@@ -68,14 +74,25 @@ class Gitruno < Gtk::Window
     @notes_model = Gtk::ListStore.new(String, String)
     @notes_view = Gtk::TreeView.new(@notes_model)
     
-    title_column = Gtk::TreeViewColumn.new("Title",
+    @title_column = Gtk::TreeViewColumn.new("Title",
       Gtk::CellRendererText.new,
       :text => 0)
-    @notes_view.append_column(title_column)
-    modified_column = Gtk::TreeViewColumn.new("Last Modified",
+    @notes_view.append_column(@title_column)
+
+    @title_column.clickable = true
+    @title_column.signal_connect("clicked") do
+      sort(0)
+    end
+
+    @modified_column = Gtk::TreeViewColumn.new("Last Modified",
       Gtk::CellRendererText.new,
       :text => 1)
-    @notes_view.append_column(modified_column)
+    @notes_view.append_column(@modified_column)
+
+    @modified_column.clickable = true
+    @modified_column.signal_connect("clicked") do
+      sort(1)
+    end
     
     @notes_view.selection.set_mode(Gtk::SELECTION_SINGLE)
 
@@ -116,6 +133,8 @@ class Gitruno < Gtk::Window
     table.attach(new_note_button, 1, 2, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
     table.attach(@sync_button, 3, 4, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
     add table
+
+    sort(0)
     # FIXME: http://zetcode.com/tutorials/rubygtktutorial/layoutmanagement/
   end
 
@@ -166,5 +185,54 @@ class Gitruno < Gtk::Window
     puts "Sync complete!"
     
     @sync_button.sensitive = true
+  end
+
+  def sort(column)
+    direction = 'asc'
+    if !@column_sort_id.nil? && @column_sort_id == column
+      if @column_sort_direction == 'asc'
+        direction = 'desc'
+      else 
+        direction = 'asc'
+      end
+    end
+
+    case column
+      when 0
+        puts "Sorting by title #{direction}..."
+
+        @title_column.sort_indicator = true
+        if direction == 'asc'
+          @title_column.sort_order = Gtk::SORT_ASCENDING
+        else
+          @title_column.sort_order = Gtk::SORT_DESCENDING
+        end
+
+        if @column_sort_id == 1
+          @modified_column.sort_indicator = false
+        end
+      when 1
+        puts "Sorting by mod time #{direction}..."
+
+        @modified_column.sort_indicator = true
+        if direction == 'asc'
+          @modified_column.sort_order = Gtk::SORT_ASCENDING
+        else
+          @modified_column.sort_order = Gtk::SORT_DESCENDING
+        end
+
+        if @column_sort_id == 0
+          @title_column.sort_indicator = false
+        end
+    end
+
+    if direction == 'asc'
+      @notes_model.set_sort_column_id column, Gtk::SORT_ASCENDING
+    else
+      @notes_model.set_sort_column_id column, Gtk::SORT_DESCENDING
+    end
+
+    @column_sort_id = column
+    @column_sort_direction = direction
   end
 end
