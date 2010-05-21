@@ -219,7 +219,7 @@ class Gitruno < Gtk::Window
   
       puts "Pulling..."
       progress_text.text = 'Pulling in notes...'
-      puts $git.pull
+      system('git pull origin master')
 
       print "Pushing... "
       progress_text.text = 'Pushing out notes...'

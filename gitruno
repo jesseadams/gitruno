@@ -17,7 +17,9 @@ $git = Git.init BASE_DIR + '/notes'
 puts "Git repo initialized!"
 
 print "Syncing notes from repo... "
-$git.pull
+
+Dir.chdir(BASE_DIR + '/notes')
+system("git pull origin master")
 print "OK\n"
 
 Gtk.init
