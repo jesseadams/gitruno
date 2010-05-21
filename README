@@ -17,6 +17,8 @@ Gitruno is short for Git/Ruby Notes. It aims to be a A tomboy replacement in Rub
 4. git remote add origin <your_repo_info>
 5. git push origin master
 
+NOTE: I highly recommend using an SSH key with the notes repo!
+
 === Usage
 
 Execute the gitruno ruby script in the root folder
@@ -36,10 +38,11 @@ Enjoy!
 
 * Add quick loads for the 10 most recent notes to StatusIcon menu
 * Add icons to StatusIcon menu
-* Investigate and fix seg fault on window.destroy
+* Investigate and fix seg fault on window.destroy (doesn't happen in Ubuntu)
 * Incorporate standard markup
 
 === Incubated
 
 * Keyboard shortcuts, if possible
 * Review revisions on a per note basis built in?
+* Find a better git library
