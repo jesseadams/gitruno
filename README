@@ -36,6 +36,8 @@ Enjoy!
 
 === Todo
 
+* Add way to rename notes
+* Pull title out of note text when initially creating
 * Add quick loads for the 10 most recent notes to StatusIcon menu
 * Add icons to StatusIcon menu
 * Investigate and fix seg fault on window.destroy (doesn't happen in Ubuntu)
