@@ -3,6 +3,7 @@ class Note < Gtk::Window
   @buffer = nil
   @file = nil
   @deleted = false
+  @title = nil
 
   def initialize(note = '')
     super
@@ -25,15 +26,18 @@ class Note < Gtk::Window
             raise "No data for new note creation. Ignoring..."
           end
 
-          note = @buffer.text.split("\n").first.to_filename
+          note = @title.to_filename
         end
-        puts "Saving Note: #{note}"
-        save_note(note)
-        $window.reload_notes
 
-        $git.add('.')
-        $git.commit_all("Saved note #{note}")
-        puts "Note saved: #{note}"
+        unless @note == @buffer.text
+          puts "Saving Note: #{note}"
+          save_note(note)
+          $window.reload_notes
+
+          $git.add('.')
+          $git.commit_all("Saved note #{note}")
+          puts "Note saved: #{note}"
+        end
       rescue Exception => error
         puts error.message
       end
@@ -46,6 +50,7 @@ class Note < Gtk::Window
       set_title "New Note"
     else 
       set_title note.to_title
+      @title = note.to_title
     end
 
     init_ui
@@ -62,6 +67,16 @@ class Note < Gtk::Window
       textview.buffer.text = @note
     end
     @buffer = textview.buffer
+
+    @buffer.signal_connect('changed') do
+      if @note.nil? && title == 'New Note'
+        if @buffer.text =~ /\n/
+          set_title @buffer.text.chomp!
+          @title = @buffer.text.chomp!
+          @buffer.text = ''
+        end
+      end
+    end
 
     textview.wrap_mode = Gtk::TextTag::WRAP_WORD
 

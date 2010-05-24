@@ -287,7 +287,7 @@ class Gitruno < Gtk::Window
 
   def process_all_first
     while Gtk.events_pending? do
-      puts "Processing pending events..."
+      #puts "Processing pending events..."
       Gtk.main_iteration
     end  
   end
