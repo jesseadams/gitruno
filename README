@@ -26,6 +26,12 @@ Execute the gitruno ruby script in the root folder
 1. cd /path/to/gitruno
 2. ./gitruno
 
+=== Adding a Note
+
+1. Click the New button at the bottom left
+2. Type the title of the note and then hit enter
+3. Type the text of the note and then click the close button
+
 === Author
 
 Jesse R. Adams (techno-geek)
