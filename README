@@ -42,14 +42,13 @@ Enjoy!
 
 === Todo
 
-* Add way to rename notes
-* Add quick loads for the 10 most recent notes to StatusIcon menu
-* Add icons to StatusIcon menu
+* Prompt before actually deleting notes.
+* Make all buttons in main toolbar functional
 * Investigate and fix seg fault on window.destroy (doesn't happen in Ubuntu)
-* Incorporate standard markup
 
 === Incubated
 
+* Incorporate standard markup
 * Keyboard shortcuts, if possible
 * Review revisions on a per note basis built in?
 * Find a better git library
