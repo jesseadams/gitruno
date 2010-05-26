@@ -16,12 +16,6 @@ puts "BASE_DIR = #{BASE_DIR}"
 $git = Git.init BASE_DIR + '/notes'
 puts "Git repo initialized!"
 
-print "Syncing notes from repo... "
-
-Dir.chdir(BASE_DIR + '/notes')
-system("git pull origin master")
-print "OK\n"
-
 Gtk.init
 $window = Gitruno.new
 Gtk.main
