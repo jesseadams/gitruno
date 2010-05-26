@@ -315,15 +315,14 @@ class Gitruno < Gtk::Window
   end
 
   def show_info
-    dialog = Gtk::Dialog.new("Info",
-                             self,
-                             Gtk::Dialog::DESTROY_WITH_PARENT,
-                             [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
-
-    dialog.signal_connect('response') { dialog.destroy }
-
-    dialog.vbox.add(Gtk::Label.new("Gitruno #{$VERSION}"))
-    dialog.vbox.add(Gtk::Label.new("By: Jesse R. Adams (techno-geek)"))
-    dialog.show_all
+    about = Gtk::AboutDialog.new
+    about.set_program_name "Gitruno"
+    about.set_version $VERSION
+    about.set_copyright "Jesse R. Adams (techno-geek)"
+    about.set_comments "A note application in ruby with git."
+    about.set_website "http://github.com/techno-geek/gitruno"
+    #about.set_logo Gtk::Stock::EDIT
+    about.run
+    about.destroy  
   end
 end

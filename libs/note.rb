@@ -29,7 +29,7 @@ class Note < Gtk::Window
           note = @title.to_filename
         end
 
-        unless @note == @buffer.text
+        if @note != @buffer.text
           puts "Saving Note: #{note}"
           save_note(note)
           $window.reload_notes
@@ -37,11 +37,16 @@ class Note < Gtk::Window
           $git.add('.')
           $git.commit_all("Saved note #{note}")
           puts "Note saved: #{note}"
+        elsif @renamed
+          $window.reload_notes
         end
       rescue Exception => error
         puts error.message
       end
-      self.destroy
+
+      if @rename_window_open
+        @rename.destroy
+      end
     end
 
     set_default_size 400, 400
@@ -105,6 +110,12 @@ class Note < Gtk::Window
       end
     end
 
+    unless !rename_button.sensitive?
+      rename_button.signal_connect('clicked') do
+        rename_note
+      end
+    end
+
     table.attach(toolbar, 1, 4, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0)
     table.attach(scrolled_win, 1, 4, 3, 8, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
     add table 
@@ -145,5 +156,57 @@ class Note < Gtk::Window
     @deleted = true
     $window.reload_notes
     destroy
+  end
+
+  def rename_note
+    unless @rename_window_open
+      vbox = Gtk::VBox.new 5, 5
+
+      @rename_entry = Gtk::Entry.new
+      @rename_entry.text = @title
+
+      @rename_button = Gtk::Button.new("OK")
+      @rename_button.signal_connect('clicked') do
+        if @title == @rename_entry.text
+          puts "Title did not change!"
+        elsif @rename_entry.text.length > 0
+          FileUtils.cp @title.to_filename, @rename_entry.text.to_filename
+          system("git rm #{@title.to_filename}")
+          $git.add('.')
+          $git.commit_all("Renamed #{@title.to_filename} to #{@rename_entry.text.to_filename}")
+
+          puts "Renamed #{@title.to_filename} to #{@rename_entry.text.to_filename}"
+
+          @title = @rename_entry.text
+          @renamed = true
+        end
+
+        @rename.destroy
+      end
+
+      @rename = Gtk::Window.new
+      @rename.set_title "Rename Note"
+      @rename.set_default_size 300, 100
+      
+      vbox.add(Gtk::Label.new("Enter new name"))
+      vbox.add(@rename_entry)
+
+      hbox = Gtk::HBox.new 5, 5
+      hbox.add(Gtk::Label.new(""))
+      hbox.add(@rename_button)
+
+      vbox.add(hbox)
+
+      @rename.add(vbox)
+
+      @rename.signal_connect('destroy') do
+        @rename_window_open = false
+      end
+
+      @rename.show_all
+    end
+
+    @rename.present
+    @rename_window_open = true
   end
 end
