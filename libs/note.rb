@@ -85,10 +85,18 @@ class Note < Gtk::Window
     scrolled_win.add(textview)
     scrolled_win.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS)
 
-    delete_button = Gtk::Button.new("Delete")
+    toolbar = Gtk::Toolbar.new
+    toolbar.set_toolbar_style Gtk::Toolbar::Style::ICONS
+
+    rename_button = Gtk::ToolButton.new Gtk::Stock::SAVE_AS
+    delete_button = Gtk::ToolButton.new Gtk::Stock::STOP
+
+    toolbar.insert 0, rename_button
+    toolbar.insert 1, delete_button
     
     if @note.nil?
       delete_button.sensitive = false
+      rename_button.sensitive = false
     end
 
     unless !delete_button.sensitive?
@@ -97,9 +105,11 @@ class Note < Gtk::Window
       end
     end
 
-    table.attach(scrolled_win, 1, 4, 1, 6, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
-    table.attach(delete_button, 2, 3, 7, 8, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(toolbar, 1, 4, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0)
+    table.attach(scrolled_win, 1, 4, 3, 8, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
     add table 
+
+    textview.grab_focus()
   end
 
   def file_to_string(file)

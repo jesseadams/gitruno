@@ -6,6 +6,8 @@ require 'git'
 require 'pp'
 require 'time'
 
+$VERSION = '1.0.1 alpha'
+
 BASE_DIR = File.expand_path(File.dirname(__FILE__))
 
 require BASE_DIR + '/libs/string'
@@ -15,6 +17,8 @@ require BASE_DIR + '/libs/note'
 puts "BASE_DIR = #{BASE_DIR}"
 $git = Git.init BASE_DIR + '/notes'
 puts "Git repo initialized!"
+
+Dir.chdir(BASE_DIR + '/notes')
 
 Gtk.init
 $window = Gitruno.new

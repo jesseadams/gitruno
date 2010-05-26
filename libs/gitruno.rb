@@ -1,17 +1,4 @@
 class Gitruno < Gtk::Window
-  @git = nil
-  @minimized = nil
-  @notes_view = nil
-  @notes_model = nil
-  @notes_index = []
-  @sync_button = nil
-
-  @column_sort_id = nil
-  @column_sort_direction = nil
-
-  @title_column = nil
-  @modified_column = nil
-
   def initialize
     super
 
@@ -50,7 +37,7 @@ class Gitruno < Gtk::Window
     end
 
     tray_option_sync = Gtk::MenuItem.new("Sync")
-    tray_option_exit = Gtk::MenuItem.new("Exit")
+    tray_option_exit = Gtk::ImageMenuItem.new(Gtk::Stock::QUIT)
 
     tray_option_sync.signal_connect('activate') do
       sync
@@ -124,31 +111,60 @@ class Gitruno < Gtk::Window
     scrolled_win.add(@notes_view)
     scrolled_win.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS)
 
-    new_note_button = Gtk::Button.new('New')
+    table = Gtk::Table.new 9, 4, false
+    table.set_column_spacings 3
 
-    @sync_button = Gtk::Button.new('Sync')
+    toolbar = Gtk::Toolbar.new
+    toolbar.set_toolbar_style Gtk::Toolbar::Style::ICONS
 
-    new_note_button.signal_connect('clicked') do 
+    note_add = Gtk::ToolButton.new Gtk::Stock::NEW
+    opentb = Gtk::ToolButton.new Gtk::Stock::OPEN
+    savetb = Gtk::ToolButton.new Gtk::Stock::SAVE_AS
+    delete = Gtk::ToolButton.new Gtk::Stock::STOP
+    @sync_button = Gtk::ToolButton.new Gtk::Stock::REFRESH
+    sep = Gtk::SeparatorToolItem.new
+    info = Gtk::ToolButton.new Gtk::Stock::INFO
+    close_button = Gtk::ToolButton.new Gtk::Stock::QUIT
+
+    opentb.sensitive = false
+    savetb.sensitive = false
+    delete.sensitive = false
+
+    toolbar.insert 0, note_add
+    toolbar.insert 1, opentb
+    toolbar.insert 2, savetb
+    toolbar.insert 3, delete
+    toolbar.insert 4, @sync_button
+    toolbar.insert 5, sep
+    toolbar.insert 6, info
+    toolbar.insert 7, close_button
+
+    note_add.signal_connect('clicked') do       
       note = Note.new
     end
 
-    @sync_button.signal_connect('clicked') do 
+    @sync_button.signal_connect('clicked') do
       if @sync_button.sensitive?
         sync
       end
     end
+  
+    info.signal_connect('clicked') do
+      show_info
+    end
 
-    table = Gtk::Table.new 9, 4, false
-    table.set_column_spacings 3
+    close_button.signal_connect('clicked') do
+      destroy
+    end
 
-    table.attach(@search_entry, 1, 4, 1, 2, Gtk::FILL, Gtk::FILL, 5, 5)
-    table.attach(scrolled_win, 1, 4, 2, 7, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
-    table.attach(new_note_button, 1, 2, 8, 9, Gtk::FILL, Gtk::FILL, 5, 5)
-    table.attach(@sync_button, 3, 4, 8, 9, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(toolbar, 1, 4, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0)
+    table.attach(@search_entry, 1, 4, 2, 3, Gtk::FILL, Gtk::FILL, 5, 5)
+    table.attach(scrolled_win, 1, 4, 3, 9, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
     add table
 
     sort(0)
-    # FIXME: http://zetcode.com/tutorials/rubygtktutorial/layoutmanagement/
+
+    @search_entry.grab_focus()
   end
 
   def load_notes
@@ -296,5 +312,18 @@ class Gitruno < Gtk::Window
     puts "Searching for notes: #{@search_entry.text}"
     @notes_model.clear
     load_notes
+  end
+
+  def show_info
+    dialog = Gtk::Dialog.new("Info",
+                             self,
+                             Gtk::Dialog::DESTROY_WITH_PARENT,
+                             [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
+
+    dialog.signal_connect('response') { dialog.destroy }
+
+    dialog.vbox.add(Gtk::Label.new("Gitruno #{$VERSION}"))
+    dialog.vbox.add(Gtk::Label.new("By: Jesse R. Adams (techno-geek)"))
+    dialog.show_all
   end
 end
