@@ -178,7 +178,7 @@ class Gitruno < Gtk::Window
       end
 
       if @search_entry.text.length > 0
-        unless file.downcase =~ /#{@search_entry.text.downcase}/
+        unless file.downcase =~ /#{@search_entry.text.downcase.gsub(/ /, '_')}/
           next
         end
       end
