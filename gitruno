@@ -12,9 +12,9 @@ $VERSION = '1.0.1 alpha'
 
 BASE_DIR = File.expand_path(File.dirname(__FILE__))
 
-require BASE_DIR + '/libs/string'
-require BASE_DIR + '/libs/gitruno'
-require BASE_DIR + '/libs/note'
+Dir.glob("#{BASE_DIR}/libs/*.rb").each do |library|
+  require library
+end
 
 puts "BASE_DIR = #{BASE_DIR}"
 $git = Git.init BASE_DIR + '/notes'
