@@ -1,6 +1,6 @@
 === Gitruno
 
-Gitruno is short for Git/Ruby Notes. It aims to be a A tomboy replacement in Ruby GTK2 that stores notes in flatfiles and uses git to manage revisions.
+Gitruno is short for Git/Ruby Notes. It aims to be a A tomboy replacement in Ruby GTK2 that stores notes in flatfiles and uses git to manage revisions. It also supports Blowfish encryption on a per-note basis, for storing sensitive information such as passwords.
 
 === Requirements
 
@@ -12,12 +12,13 @@ Gitruno is short for Git/Ruby Notes. It aims to be a A tomboy replacement in Rub
 === Installation
 
 1. Clone gitruno git repository
-2. Create a personal repository somewhere to hold notes for syncing
-3. cd /path/to/gitruno/notes
-4. git remote add origin <your_repo_info>
-5. git push origin master
+2. mkdir ~/.notes
+3. cd ~/.notes
+4. git init
+5. git remote add origin <your_repo_info>
+6. git push origin master
 
-NOTE: I highly recommend using an SSH key with the notes repo!
+NOTE: You will need to use a password-less SSH key with the notes repo for syncing
 
 === Usage
 
@@ -34,7 +35,7 @@ Execute the gitruno ruby script in the root folder
 
 === Author
 
-Jesse R. Adams (techno-geek)
+Jesse R. Adams
 
 Please foward all questions to jesse <at> techno <dash> geeks <dot> org.
 
