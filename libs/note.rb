@@ -1,3 +1,5 @@
+CRYPTO_KEY = '047afed631b2227ee276a6e91325394a'
+
 class Note < Gtk::Window
   @note = nil
   @buffer = nil
@@ -152,13 +154,19 @@ class Note < Gtk::Window
   end
 
   def file_to_string(file)
-    contents = File.readlines(NOTE_DIR + '/' + file)
+    lines = File.readlines(NOTE_DIR + '/' + file)
 
-    if contents.first.chomp == "encoding=true" then
+    if lines.first.chomp == "encoding=true" then
       @was_encoded = true
-      return Base64.decode64(contents.last)
+      contents = ''
+      lines.each do |line|
+        next if line == lines.first
+        contents << line
+      end
+   
+      return Blowfish.decrypt(CRYPTO_KEY, contents.chomp)
     else
-      return contents.join("")
+      return lines.join("")
     end
   end
 
@@ -167,7 +175,7 @@ class Note < Gtk::Window
 
     if @encode_note then
       handle.puts "encoding=true"
-      handle.puts Base64.encode64(@buffer.text)
+      handle.puts Blowfish.encrypt(CRYPTO_KEY, @buffer.text)
     else
       lines = @buffer.text.split("\n")
 
