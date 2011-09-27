@@ -3,24 +3,25 @@
 require 'rubygems'
 require 'gtk2'
 require 'git'
-require 'pp'
 require 'time'
+require 'base64'
 
 include FileUtils
 
 $VERSION = '1.0.1 alpha'
 
 BASE_DIR = File.expand_path(File.dirname(__FILE__))
+NOTE_DIR = ENV['HOME'] + '/.notes'
 
 Dir.glob("#{BASE_DIR}/libs/*.rb").each do |library|
   require library
 end
 
 puts "BASE_DIR = #{BASE_DIR}"
-$git = Git.init BASE_DIR + '/notes'
+$git = Git.init NOTE_DIR
 puts "Git repo initialized!"
 
-Dir.chdir(BASE_DIR + '/notes')
+Dir.chdir(NOTE_DIR)
 
 Gtk.init
 $window = Gitruno.new

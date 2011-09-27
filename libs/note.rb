@@ -4,6 +4,8 @@ class Note < Gtk::Window
   @file = nil
   @deleted = false
   @title = nil
+  @encode_note = false
+  @was_encoded = false
 
   def initialize(note = '')
     super
@@ -29,11 +31,12 @@ class Note < Gtk::Window
           note = @title.to_filename
         end
 
-        if @note != @buffer.text
+        if @note != @buffer.text or @was_encoded != @encode_note
           puts "Saving Note: #{note}"
           save_note(note)
           $window.reload_notes
 
+          puts Dir.getwd()
           $git.add('.')
           $git.commit_all("Saved note #{note}")
           puts "Note saved: #{note}"
@@ -62,6 +65,7 @@ class Note < Gtk::Window
 
     show_all
   end
+
   def init_ui
     table = Gtk::Table.new 8, 4, false
   
@@ -95,9 +99,20 @@ class Note < Gtk::Window
 
     rename_button = Gtk::ToolButton.new Gtk::Stock::SAVE_AS
     delete_button = Gtk::ToolButton.new Gtk::Stock::STOP
+    
+    encode_not_clicked = Gtk::Stock::SAVE
+    encode_clicked = Gtk::Stock::SAVE_AS
+
+    if @was_encoded then
+      @encode_button = Gtk::ToolButton.new encode_clicked
+      @encode_note = true
+    else
+      @encode_button = Gtk::ToolButton.new encode_not_clicked
+    end
 
     toolbar.insert 0, rename_button
     toolbar.insert 1, delete_button
+    toolbar.insert 2, @encode_button
     
     if @note.nil?
       delete_button.sensitive = false
@@ -116,6 +131,19 @@ class Note < Gtk::Window
       end
     end
 
+    @encode_button.signal_connect('clicked') do
+      if @encode_button.stock_id == encode_not_clicked.to_s then
+        puts "encode that note!"
+        @encode_note = true
+        @encode_button.stock_id = encode_clicked
+      else
+        puts "dont encode that note!"
+        @encode_note = false
+        @encode_button.stock_id = encode_not_clicked
+      end
+      puts "pass"
+    end
+
     table.attach(toolbar, 1, 4, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0)
     table.attach(scrolled_win, 1, 4, 3, 8, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 1, 1)
     add table 
@@ -124,24 +152,28 @@ class Note < Gtk::Window
   end
 
   def file_to_string(file)
-    handle = File.open(BASE_DIR + '/notes/' + file)
+    contents = File.readlines(NOTE_DIR + '/' + file)
 
-    contents = ""
-    handle.each do |line|
-      contents << line
+    if contents.first.chomp == "encoding=true" then
+      @was_encoded = true
+      return Base64.decode64(contents.last)
+    else
+      return contents.join("")
     end
-    
-    handle.close
-
-    return contents
   end
 
   def save_note(file)
-    handle = File.open(BASE_DIR + '/notes/' + file, 'w')
-    lines = @buffer.text.split("\n")
+    handle = File.open(NOTE_DIR + '/' + file, 'w')
 
-    lines.each do |line|
-      handle.puts line
+    if @encode_note then
+      handle.puts "encoding=true"
+      handle.puts Base64.encode64(@buffer.text)
+    else
+      lines = @buffer.text.split("\n")
+
+      lines.each do |line|
+        handle.puts line
+      end
     end
 
     handle.close
@@ -149,7 +181,7 @@ class Note < Gtk::Window
 
   def delete_note
     print "Deleting #{@file}... "
-    $git.remove(BASE_DIR + '/notes/' + @file)
+    $git.remove(NOTE_DIR + '/' + @file)
     $git.commit_all("Removed note #{@file}")
     print "OK\n"
      

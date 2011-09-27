@@ -168,8 +168,10 @@ class Gitruno < Gtk::Window
   end
 
   def load_notes
+    note_dir = ENV['HOME'] + '/.notes'
+
     puts ">> Loading notes... "
-    files = Dir.entries(BASE_DIR + '/notes')
+    files = Dir.entries(note_dir)
 
     num_notes = 0 
     files.each do |file|
@@ -185,7 +187,7 @@ class Gitruno < Gtk::Window
 
       iter = @notes_model.append
       iter[0] = file.to_title
-      iter[1] = Time.parse(File.mtime(BASE_DIR + '/notes/' + file).to_s).strftime('%Y-%m-%d %I:%M %p')
+      iter[1] = Time.parse(File.mtime(note_dir + '/' + file).to_s).strftime('%Y-%m-%d %I:%M %p')
       puts "Added #{file} as '#{file.to_title}'"
       num_notes = num_notes + 1
     end
