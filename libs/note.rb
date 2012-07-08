@@ -39,8 +39,8 @@ class Note < Gtk::Window
           $window.reload_notes
 
           puts Dir.getwd()
-          $git.add('.')
-          $git.commit_all("Saved note #{note}")
+          system('git add .')
+          system("git commit -a -m \"Saved note #{note}\"")
           puts "Note saved: #{note}"
         elsif @renamed
           $window.reload_notes
@@ -189,8 +189,10 @@ class Note < Gtk::Window
 
   def delete_note
     print "Deleting #{@file}... "
-    $git.remove(NOTE_DIR + '/' + @file)
-    $git.commit_all("Removed note #{@file}")
+    #$git.remove(NOTE_DIR + '/' + @file)
+    system("git rm #{File.join(NOTE_DIR, @file)}")
+    #$git.commit_all("Removed note #{@file}")
+    system("git commit -a -m \"Removed note #{@file}\"")
     print "OK\n"
      
     @deleted = true
@@ -212,8 +214,8 @@ class Note < Gtk::Window
         elsif @rename_entry.text.length > 0
           FileUtils.cp @title.to_filename, @rename_entry.text.to_filename
           system("git rm #{@title.to_filename}")
-          $git.add('.')
-          $git.commit_all("Renamed #{@title.to_filename} to #{@rename_entry.text.to_filename}")
+          system("git add .")
+          system("git commit -a -m \"Renamed #{@title.to_filename} to #{@rename_entry.text.to_filename}\"")
 
           puts "Renamed #{@title.to_filename} to #{@rename_entry.text.to_filename}"
 

@@ -2,22 +2,23 @@
 
 require 'rubygems'
 require 'gtk2'
-require 'git'
 require 'time'
+require 'fileutils'
 
-include FileUtils
-
-$VERSION = '1.0.1 alpha'
+$VERSION = '1.0.2'
 
 BASE_DIR = File.expand_path(File.dirname(__FILE__))
+puts BASE_DIR
 NOTE_DIR = ENV['HOME'] + '/.notes'
+puts NOTE_DIR
 
 Dir.glob("#{BASE_DIR}/libs/*.rb").each do |library|
   require library
 end
 
 puts "BASE_DIR = #{BASE_DIR}"
-$git = Git.init NOTE_DIR
+#$git = Git.init NOTE_DIR
+system(`git init #{NOTE_DIR}`)
 puts "Git repo initialized!"
 
 Dir.chdir(NOTE_DIR)

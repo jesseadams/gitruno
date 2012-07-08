@@ -204,7 +204,7 @@ class Gitruno < Gtk::Window
   def sync
     @sync_button.sensitive = false
     puts "Attempting to sync files..."
-    number_changed = $git.status.changed.length
+    #number_changed = $git.status.changed.length
 
     dialog = Gtk::Dialog.new("Syncing Notes", self, Gtk::Dialog::DESTROY_WITH_PARENT)
 
@@ -228,12 +228,13 @@ class Gitruno < Gtk::Window
     process_all_first
 
     Thread.start do
-      if number_changed > 0
-        puts "Files have changed. Committing before sync..."
-        puts "Committing..."
-        progress_text.text = 'Committing...'
-        puts $git.commit_all('Syncing notes!')
-      end
+#      if number_changed > 0
+#        puts "Files have changed. Committing before sync..."
+#        puts "Committing..."
+#        progress_text.text = 'Committing...'
+#        #puts $git.commit_all('Syncing notes!')
+#        system('git commit -a -m "Syncing notes!"')
+#      end
   
       puts "Pulling..."
       progress_text.text = 'Pulling in notes...'
@@ -241,7 +242,7 @@ class Gitruno < Gtk::Window
 
       print "Pushing... "
       progress_text.text = 'Pushing out notes...'
-      $git.push
+      system('git push origin master')
       print "OK\n"
 
       puts "Sync complete!"
@@ -320,10 +321,27 @@ class Gitruno < Gtk::Window
     about = Gtk::AboutDialog.new
     about.set_program_name "Gitruno"
     about.set_version $VERSION
-    about.set_copyright "Jesse R. Adams (techno-geek)"
+    about.set_authors ["Jesse R. Adams"]
+    about.set_copyright "Copyright (c) 2010-2012 Jesse R. Adams"
+    about.set_license <<-EOS
+      Copyright (c) 2010-2012 Jesse R. Adams 
+
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+      along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    EOS
+
     about.set_comments "A note application in ruby with git."
-    about.set_website "http://github.com/techno-geek/gitruno"
-    #about.set_logo Gtk::Stock::EDIT
+    about.set_website "http://github.com/jesseadams/gitruno"
     about.run
     about.destroy  
   end
