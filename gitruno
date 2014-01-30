@@ -25,4 +25,5 @@ Dir.chdir(NOTE_DIR)
 
 Gtk.init
 $window = Gitruno.new
+$window.show_all
 Gtk.main
